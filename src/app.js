@@ -95,9 +95,9 @@ async function initializeApp() {
     // Iniciar servidor
     app.listen(PORT, () => {
       console.log(`🎉 Servidor ejecutándose en puerto ${PORT}`);
-      console.log(`📚 Documentación disponible en: http://localhost:${PORT}/api-docs`);
-      console.log(`🏥 Health check en: http://localhost:${PORT}/api/health`);
-      console.log(`🔍 API de clasificación en: http://localhost:${PORT}/api/text-mining`);
+      console.log(`📚 Documentación disponible en: http://:${PORT}/api-docs`);
+      console.log(`🏥 Health check en: http://:${PORT}/api/health`);
+      console.log(`🔍 API de clasificación en: http://:${PORT}/api/text-mining`);
     });
     
   } catch (error) {

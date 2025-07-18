@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { classifyQuestion } = require('../services/textClassification');
 const { validateQuestionInput } = require('../middleware/validation');
-const { updateUserStats, saveQuestion, getUserStats } = require('../services/userStats');
+const { updateUserStats, saveQuestion, getUserStats, getUserWeeklyStats } = require('../services/userStats');
 
 /**
  * @swagger
@@ -206,6 +206,132 @@ router.get('/stats/:userId', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error al obtener estadísticas',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/text-mining/stats/{userId}/weekly:
+ *   get:
+ *     summary: Obtiene las estadísticas de clasificación de un usuario de los últimos días
+ *     description: |
+ *       Retorna las estadísticas de un usuario para los últimos N días, incluyendo:
+ *       - Número de preguntas por categoría en el período especificado
+ *       - Score ponderado del período
+ *       - Fecha de inicio y fin del período
+ *       - Total de preguntas realizadas
+ *       
+ *       Las estadísticas se calculan en tiempo real desde la base de datos.
+ *     tags: [Text Mining]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario (referencia externa)
+ *         example: 123
+ *       - in: query
+ *         name: days
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 30
+ *           default: 7
+ *         description: Número de días hacia atrás para calcular estadísticas (por defecto 7)
+ *         example: 7
+ *     responses:
+ *       200:
+ *         description: Estadísticas del usuario obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 period:
+ *                   type: object
+ *                   properties:
+ *                     startDate:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-01-10"
+ *                     endDate:
+ *                       type: string
+ *                       format: date
+ *                       example: "2024-01-17"
+ *                     days:
+ *                       type: integer
+ *                       example: 7
+ *                 stats:
+ *                   type: object
+ *                   properties:
+ *                     preguntas_nutricion:
+ *                       type: integer
+ *                       example: 3
+ *                     preguntas_entrenamiento:
+ *                       type: integer
+ *                       example: 8
+ *                     preguntas_recuperacion:
+ *                       type: integer
+ *                       example: 2
+ *                     preguntas_prevencion_lesiones:
+ *                       type: integer
+ *                       example: 1
+ *                     preguntas_equipamiento:
+ *                       type: integer
+ *                       example: 0
+ *                     score_ponderado:
+ *                       type: number
+ *                       format: float
+ *                       example: 32.0
+ *                     total_preguntas:
+ *                       type: integer
+ *                       example: 14
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/stats/:userId/weekly', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const days = parseInt(req.query.days) || 7;
+    
+    // Validar que days esté entre 1 y 30
+    if (days < 1 || days > 30) {
+      return res.status(400).json({
+        success: false,
+        error: 'Parámetro days inválido',
+        message: 'El parámetro days debe estar entre 1 y 30'
+      });
+    }
+    
+    const stats = await getUserWeeklyStats(parseInt(userId), days);
+    
+    res.json({
+      success: true,
+      ...stats
+    });
+    
+  } catch (error) {
+    console.error('❌ Error obteniendo estadísticas semanales:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener estadísticas semanales',
       message: error.message
     });
   }

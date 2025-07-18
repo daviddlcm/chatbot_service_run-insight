@@ -1,4 +1,5 @@
 const { ChatbotQuestion, ChatbotCategory } = require('../models');
+const { Op } = require('sequelize');
 
 /**
  * Servicio para manejar estadísticas de usuario y métricas ponderadas
@@ -268,6 +269,108 @@ class UserStatsService {
       throw new Error(`Error al obtener estadísticas globales: ${error.message}`);
     }
   }
+
+  /**
+   * Obtiene estadísticas semanales de un usuario
+   * @param {number} userId - ID del usuario (referencia externa)
+   * @param {number} days - Número de días hacia atrás (por defecto 7)
+   * @returns {Object} - Estadísticas del período especificado
+   */
+  async getUserWeeklyStats(userId, days = 7) {
+    try {
+      console.log(`📊 Obteniendo estadísticas para usuario ${userId}, últimos ${days} días`);
+      
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      // Obtener estadísticas del período especificado
+      const stats = await this.getStatsForPeriod(userId, startDate, endDate);
+      
+      const weeklyStats = {
+        period: {
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+          days: days
+        },
+        stats: stats
+      };
+      
+      console.log(`✅ Estadísticas obtenidas para usuario ${userId}`);
+      return weeklyStats;
+      
+    } catch (error) {
+      console.error('❌ Error obteniendo estadísticas:', error);
+      throw new Error(`Error al obtener estadísticas: ${error.message}`);
+    }
+  }
+
+  /**
+   * Obtiene estadísticas para un período específico
+   * @param {number} userId - ID del usuario
+   * @param {Date} startDate - Fecha de inicio
+   * @param {Date} endDate - Fecha de fin
+   * @returns {Object} - Estadísticas del período
+   */
+  async getStatsForPeriod(userId, startDate, endDate) {
+    try {
+      const questionStats = await ChatbotQuestion.findAll({
+        where: {
+          user_id: userId,
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          }
+        },
+        include: [{
+          model: ChatbotCategory,
+          attributes: ['name']
+        }],
+        attributes: [
+          [ChatbotQuestion.sequelize.fn('COUNT', ChatbotQuestion.sequelize.col('ChatbotQuestion.id')), 'count'],
+          'category_id'
+        ],
+        group: ['category_id', 'ChatbotCategory.name']
+      });
+
+      // Inicializar contadores
+      const stats = {
+        preguntas_nutricion: 0,
+        preguntas_entrenamiento: 0,
+        preguntas_recuperacion: 0,
+        preguntas_prevencion_lesiones: 0,
+        preguntas_equipamiento: 0,
+        total_preguntas: 0
+      };
+
+      // Mapear resultados de la consulta
+      const categoryMapping = {
+        'nutricion': 'preguntas_nutricion',
+        'entrenamiento': 'preguntas_entrenamiento',
+        'recuperacion': 'preguntas_recuperacion',
+        'prevencion': 'preguntas_prevencion_lesiones',
+        'equipamiento': 'preguntas_equipamiento'
+      };
+
+      questionStats.forEach(stat => {
+        const categoryName = stat.ChatbotCategory.name;
+        const fieldName = categoryMapping[categoryName];
+        if (fieldName) {
+          const count = parseInt(stat.dataValues.count);
+          stats[fieldName] = count;
+          stats.total_preguntas += count;
+        }
+      });
+
+      // Calcular score ponderado
+      stats.score_ponderado = this.calculateWeightedScore(stats);
+      
+      return stats;
+      
+    } catch (error) {
+      console.error('❌ Error obteniendo estadísticas del período:', error);
+      throw error;
+    }
+  }
 }
 
 // Instancia singleton del servicio
@@ -311,5 +414,6 @@ module.exports = {
   getGlobalStats: () => userStatsService.getGlobalStats(),
   saveQuestion: (userId, question, category) => userStatsService.saveQuestion(userId, question, category),
   calculateWeightedScore: (stats) => userStatsService.calculateWeightedScore(stats),
-  initializeCategories
+  initializeCategories,
+  getUserWeeklyStats: (userId, days) => userStatsService.getUserWeeklyStats(userId, days)
 }; 

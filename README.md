@@ -108,6 +108,23 @@ Content-Type: application/json
 GET /api/text-mining/stats/123
 ```
 
+#### 📈 Obtener Estadísticas por Período
+```http
+GET /api/text-mining/stats/123/weekly
+GET /api/text-mining/stats/123/weekly?days=14
+```
+
+**Parámetros:**
+- `userId` (path): ID del usuario
+- `days` (query, opcional): Número de días hacia atrás (1-30, por defecto 7)
+
+**Respuesta incluye:**
+- Período analizado (fechas de inicio y fin)
+- Estadísticas del período especificado
+- Preguntas por categoría
+- Score ponderado
+- Total de preguntas
+
 #### 📋 Obtener Categorías
 ```http
 GET /api/text-mining/categories
@@ -128,6 +145,11 @@ npm test
 ### Probar Clasificación
 ```bash
 node demo/test-expanded-keywords.js
+```
+
+### Probar Estadísticas por Período
+```bash
+node demo/test-weekly-stats.js
 ```
 
 ### Ejemplos de Preguntas
