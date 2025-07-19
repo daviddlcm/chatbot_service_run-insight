@@ -7,6 +7,7 @@ const swaggerSpecs = require('./config/swagger');
 // Importar rutas
 const healthRoutes = require('./routes/health');
 const textMiningRoutes = require('./routes/textMining');
+const {verifyInternalToken} = require("./middleware/connection.middleware")
 
 // Importar servicios y configuración
 const { initializeDatabase } = require('./config/database');
@@ -51,6 +52,7 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use(verifyInternalToken)
 // Rutas de la API
 app.use('/api/health', healthRoutes);
 app.use('/api/text-mining', textMiningRoutes);
