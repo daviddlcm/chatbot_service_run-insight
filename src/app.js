@@ -52,10 +52,9 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use(verifyInternalToken)
 // Rutas de la API
 app.use('/api/health', healthRoutes);
-app.use('/api/text-mining', textMiningRoutes);
+app.use('/api/text-mining', verifyInternalToken, textMiningRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

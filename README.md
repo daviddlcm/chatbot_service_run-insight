@@ -65,6 +65,7 @@ Servicio de microservicios para clasificación automática de preguntas del chat
    DB_PASSWORD=tu_password
    PORT=3000
    NODE_ENV=development
+   INTERNAL_TOKEN=tu_token_interno_secreto
    ```
 
 4. **Crear base de datos**
