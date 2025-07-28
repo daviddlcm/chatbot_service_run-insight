@@ -54,7 +54,7 @@ app.get('/', (req, res) => {
 
 // Rutas de la API
 app.use('/api/health', healthRoutes);
-app.use('/api/text-mining', verifyInternalToken, textMiningRoutes);
+app.use('/api/text-mining', textMiningRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {
