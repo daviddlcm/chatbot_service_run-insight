@@ -351,15 +351,26 @@ class TextClassificationService {
         console.log(`⚠️ Confianza baja (${confidence.toFixed(2)}%), usando categoría por defecto`);
       }
       
+      // Agregar mapeo de categorías internas a nombres de BD
+      const categoryMapping = {
+        'nutricion': 'Nutrición',
+        'entrenamiento': 'Entrenamiento',
+        'recuperacion': 'Recuperación',
+        'prevencion': 'Prevención',
+        'equipamiento': 'Equipamiento'
+      };
+
+      const dbCategoryName = categoryMapping[bestCategory] || bestCategory;
+
       const result = {
-        category: bestCategory,
+        category: dbCategoryName, // Usar nombre de BD
         confidence: Math.round(confidence * 100) / 100,
         scores: scores,
         processedText: processedText,
         originalText: question
       };
       
-      console.log(`✅ Clasificación completada: ${bestCategory} (confianza: ${confidence.toFixed(2)}%)`);
+      console.log(`✅ Clasificación completada: ${dbCategoryName} (confianza: ${confidence.toFixed(2)}%)`);
       console.log(`📊 Scores por categoría:`, scores);
       
       return result;

@@ -11,11 +11,11 @@ const { updateUserStats, saveQuestion, getUserStats, getUserWeeklyStats } = requ
  *     summary: Clasifica una pregunta del usuario en categorías de fitness
  *     description: |
  *       Analiza una pregunta usando algoritmos de minería de texto y la clasifica en una de las 5 categorías:
- *       - **nutricion**: Preguntas sobre alimentación, suplementos, hidratación
- *       - **entrenamiento**: Preguntas sobre ejercicios, rutinas, técnicas
- *       - **recuperacion**: Preguntas sobre descanso, estiramientos, recuperación
- *       - **prevencion**: Preguntas sobre prevención de lesiones, fortalecimiento
- *       - **equipamiento**: Preguntas sobre ropa, calzado, tecnología deportiva
+ *       - **Nutrición**: Preguntas sobre alimentación, suplementos, hidratación
+ *       - **Entrenamiento**: Preguntas sobre ejercicios, rutinas, técnicas
+ *       - **Recuperación**: Preguntas sobre descanso, estiramientos, recuperación
+ *       - **Prevención**: Preguntas sobre prevención de lesiones, fortalecimiento
+ *       - **Equipamiento**: Preguntas sobre ropa, calzado, tecnología deportiva
  *       
  *       La pregunta se guarda automáticamente en la base de datos y se actualizan las estadísticas del usuario.
  *     tags: [Text Mining]
@@ -58,7 +58,7 @@ const { updateUserStats, saveQuestion, getUserStats, getUserWeeklyStats } = requ
  *                 summary: Respuesta para pregunta de nutrición
  *                 value:
  *                   success: true
- *                   category: "nutricion"
+ *                   category: "Nutrición"
  *                   confidence: 85.5
  *                   userStats:
  *                     preguntas_nutricion: 5
@@ -347,11 +347,11 @@ router.get('/stats/:userId/weekly', async (req, res) => {
  *       
  *       | Categoría | Peso | Descripción |
  *       |-----------|------|-------------|
- *       | entrenamiento | 3 | Preguntas sobre rutinas, ejercicios, técnicas |
- *       | nutricion | 2 | Preguntas sobre alimentación, suplementos |
- *       | recuperacion | 2 | Preguntas sobre descanso, recuperación |
- *       | prevencion | 2 | Preguntas sobre prevención de lesiones |
- *       | equipamiento | 1 | Preguntas sobre ropa, calzado, tecnología |
+ *       | Entrenamiento | 3 | Preguntas sobre rutinas, ejercicios, técnicas |
+ *       | Nutrición | 2 | Preguntas sobre alimentación, suplementos |
+ *       | Recuperación | 2 | Preguntas sobre descanso, recuperación |
+ *       | Prevención | 2 | Preguntas sobre prevención de lesiones |
+ *       | Equipamiento | 1 | Preguntas sobre ropa, calzado, tecnología |
  *       
  *       Los pesos se utilizan para calcular el score ponderado del usuario.
  *     tags: [Text Mining]
@@ -366,27 +366,27 @@ router.get('/stats/:userId/weekly', async (req, res) => {
  *               success: true
  *               categories: [
  *                 {
- *                   name: "entrenamiento",
+ *                   name: "Entrenamiento",
  *                   weight: 3,
  *                   description: "Preguntas sobre rutinas, ejercicios, técnicas"
  *                 },
  *                 {
- *                   name: "nutricion",
+ *                   name: "Nutrición",
  *                   weight: 2,
  *                   description: "Preguntas sobre alimentación, suplementos"
  *                 },
  *                 {
- *                   name: "recuperacion",
+ *                   name: "Recuperación",
  *                   weight: 2,
  *                   description: "Preguntas sobre descanso, recuperación"
  *                 },
  *                 {
- *                   name: "prevencion",
+ *                   name: "Prevención",
  *                   weight: 2,
  *                   description: "Preguntas sobre prevención de lesiones"
  *                 },
  *                 {
- *                   name: "equipamiento",
+ *                   name: "Equipamiento",
  *                   weight: 1,
  *                   description: "Preguntas sobre ropa, calzado, tecnología"
  *                 }
@@ -394,11 +394,11 @@ router.get('/stats/:userId/weekly', async (req, res) => {
  */
 router.get('/categories', (req, res) => {
   const categories = [
-    { name: 'entrenamiento', weight: 3, description: 'Preguntas sobre rutinas, ejercicios, técnicas' },
-    { name: 'nutricion', weight: 2, description: 'Preguntas sobre alimentación, suplementos' },
-    { name: 'recuperacion', weight: 2, description: 'Preguntas sobre descanso, recuperación' },
-    { name: 'prevencion', weight: 2, description: 'Preguntas sobre prevención de lesiones' },
-    { name: 'equipamiento', weight: 1, description: 'Preguntas sobre ropa, calzado, tecnología' }
+    { name: 'Entrenamiento', weight: 3, description: 'Preguntas sobre rutinas, ejercicios, técnicas' },
+    { name: 'Nutrición', weight: 2, description: 'Preguntas sobre alimentación, suplementos' },
+    { name: 'Recuperación', weight: 2, description: 'Preguntas sobre descanso, recuperación' },
+    { name: 'Prevención', weight: 2, description: 'Preguntas sobre prevención de lesiones' },
+    { name: 'Equipamiento', weight: 1, description: 'Preguntas sobre ropa, calzado, tecnología' }
   ];
   
   res.json({

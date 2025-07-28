@@ -52,13 +52,13 @@ class UserStatsService {
         ultima_actualizacion: new Date().toISOString()
       };
 
-      // Mapear resultados de la consulta
+      // Mapear resultados de la BD a los nombres esperados
       const categoryMapping = {
-        'nutricion': 'preguntas_nutricion',
-        'entrenamiento': 'preguntas_entrenamiento',
-        'recuperacion': 'preguntas_recuperacion',
-        'prevencion': 'preguntas_prevencion_lesiones',
-        'equipamiento': 'preguntas_equipamiento'
+        'Nutrición': 'preguntas_nutricion',
+        'Entrenamiento': 'preguntas_entrenamiento', 
+        'Recuperación': 'preguntas_recuperacion',
+        'Prevención': 'preguntas_prevencion_lesiones',
+        'Equipamiento': 'preguntas_equipamiento'
       };
 
       questionStats.forEach(stat => {
@@ -117,27 +117,27 @@ class UserStatsService {
    * Guarda una pregunta clasificada en la base de datos
    * @param {number} userId - ID del usuario (referencia externa)
    * @param {string} question - Pregunta del usuario
-   * @param {string} category - Categoría clasificada
+   * @param {string} categoryName - Categoría clasificada
    * @returns {Object} - Pregunta guardada
    */
-  async saveQuestion(userId, question, category) {
+  async saveQuestion(userId, question, categoryName) {
     try {
-      console.log(`💾 Guardando pregunta para usuario ${userId}, categoría: ${category}`);
+      console.log(`💾 Guardando pregunta para usuario ${userId}, categoría: ${categoryName}`);
       
-      // Obtener el ID de la categoría
-      const categoryRecord = await ChatbotCategory.findOne({
-        where: { name: category }
+      // Buscar la categoría por nombre
+      const category = await ChatbotCategory.findOne({
+        where: { name: categoryName }
       });
 
-      if (!categoryRecord) {
-        throw new Error(`Categoría no encontrada: ${category}`);
+      if (!category) {
+        throw new Error(`Categoría no encontrada: ${categoryName}`);
       }
 
-      // Guardar la pregunta en la base de datos
+      // Guardar la pregunta
       const savedQuestion = await ChatbotQuestion.create({
         user_id: userId,
         question: question,
-        category_id: categoryRecord.id,
+        category_id: category.id,
         created_at: new Date()
       });
 
@@ -245,11 +245,11 @@ class UserStatsService {
 
       // Mapear resultados
       const categoryMapping = {
-        'nutricion': 'nutricion',
-        'entrenamiento': 'entrenamiento',
-        'recuperacion': 'recuperacion',
-        'prevencion': 'prevencion',
-        'equipamiento': 'equipamiento'
+        'Nutrición': 'nutricion',
+        'Entrenamiento': 'entrenamiento',
+        'Recuperación': 'recuperacion',
+        'Prevención': 'prevencion',
+        'Equipamiento': 'equipamiento'
       };
 
       questionStats.forEach(stat => {
@@ -342,13 +342,13 @@ class UserStatsService {
         total_preguntas: 0
       };
 
-      // Mapear resultados de la consulta
+      // Mapear resultados de la BD a los nombres esperados
       const categoryMapping = {
-        'nutricion': 'preguntas_nutricion',
-        'entrenamiento': 'preguntas_entrenamiento',
-        'recuperacion': 'preguntas_recuperacion',
-        'prevencion': 'preguntas_prevencion_lesiones',
-        'equipamiento': 'preguntas_equipamiento'
+        'Nutrición': 'preguntas_nutricion',
+        'Entrenamiento': 'preguntas_entrenamiento',
+        'Recuperación': 'preguntas_recuperacion',
+        'Prevención': 'preguntas_prevencion_lesiones',
+        'Equipamiento': 'preguntas_equipamiento'
       };
 
       questionStats.forEach(stat => {
@@ -384,11 +384,11 @@ async function initializeCategories() {
     console.log('📋 Inicializando categorías del chatbot...');
     
     const categories = [
-      { name: 'entrenamiento', weight: 3, description: 'Preguntas sobre rutinas, ejercicios, técnicas' },
-      { name: 'nutricion', weight: 2, description: 'Preguntas sobre alimentación, suplementos' },
-      { name: 'recuperacion', weight: 2, description: 'Preguntas sobre descanso, recuperación' },
-      { name: 'prevencion', weight: 2, description: 'Preguntas sobre prevención de lesiones' },
-      { name: 'equipamiento', weight: 1, description: 'Preguntas sobre ropa, calzado, tecnología' }
+      { name: 'Nutrición' },
+      { name: 'Entrenamiento' },
+      { name: 'Recuperación' },
+      { name: 'Prevención' },
+      { name: 'Equipamiento' }
     ];
 
     for (const category of categories) {

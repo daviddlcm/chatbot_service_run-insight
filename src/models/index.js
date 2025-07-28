@@ -60,11 +60,11 @@ ChatbotQuestion.belongsTo(ChatbotCategory, { foreignKey: 'category_id' });
 const initializeCategories = async () => {
   try {
     const categories = [
-      { name: 'nutricion' },
-      { name: 'entrenamiento' },
-      { name: 'recuperacion' },
-      { name: 'prevencion' },
-      { name: 'equipamiento' }
+      { name: 'Nutrición' },
+      { name: 'Entrenamiento' },
+      { name: 'Recuperación' },
+      { name: 'Prevención' },
+      { name: 'Equipamiento' }
     ];
 
     for (const category of categories) {
